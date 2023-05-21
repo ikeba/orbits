@@ -1,9 +1,15 @@
-import { turnTo, moveTo } from '../utils/movement';
+import { Graphics } from 'pixi.js';
+import { moveTo, turnTo } from '../utils/movement';
 import { DEFAULT_SHIP_SPEED } from '../config';
 import { getMovementLine } from '../utils/graphics';
 import Ship from '../game-objects/ship';
 import Asteroid from '../game-objects/asteroid';
+import { getDistance } from '../utils/utils';
 
+type AnimationQueueElement = {
+  target: Asteroid,
+  animation: () => any,
+}
 export default class Movement {
   obj: Ship = null;
   position: Asteroid;
@@ -12,8 +18,8 @@ export default class Movement {
   isMoving = false;
   target: Asteroid = null;
 
-  queue: Array<{ target: Asteroid, animation: any }> = [];
-  animationLines: Array<any> = [];
+  queue: Array<AnimationQueueElement> = [];
+  animationLines: Array<Graphics> = [];
 
   constructor({
     obj = null,
@@ -25,24 +31,24 @@ export default class Movement {
     this.position = position;
   }
 
-  addAnimationLine(from, to) {
+  private addAnimationLine(from, to) {
     const line = getMovementLine(from, to);
     this.obj.scene.addChild(line);
     this.animationLines.push(line);
   }
 
-  removeAnimationLine(line) {
+  private removeAnimationLine(line) {
     this.obj.scene.removeChild(line);
     this.animationLines.splice(this.animationLines.indexOf(line), 1);
   }
 
-  updateCurrentAnimationLine() {
+  private updateCurrentAnimationLine() {
     this.obj.scene.removeChild(this.animationLines[0]);
     this.animationLines[0] = getMovementLine(this.obj, this.queue[0].target);
     this.obj.scene.addChild(this.animationLines[0]);
   }
 
-  addAnimation({ target, animation }) {
+  private addAnimation({ target, animation }: AnimationQueueElement) {
     if (this.queue.length) {
       this.addAnimationLine(this.queue[this.queue.length - 1].target, target);
     } else {
@@ -54,7 +60,31 @@ export default class Movement {
     });
   }
 
-  add(target: Asteroid) {
+  private endAnimation() {
+    this.queue.shift();
+    this.removeAnimationLine(this.animationLines[0]);
+
+    if (!this.queue.length) {
+      this.stop();
+    } else {
+      this.queue[0].animation();
+    }
+  }
+
+  private start() {
+    if (!this.isMoving) {
+      this.isMoving = true;
+      this.queue[0].animation();
+    }
+  }
+
+  private stop() {
+    this.position = this.target;
+    this.target = null;
+    this.isMoving = false;
+  }
+
+  public add(target: Asteroid) {
     if (target === this.queue[this.queue.length - 1]?.target) {
       console.warn('Duplicated final position');
       return;
@@ -73,27 +103,26 @@ export default class Movement {
     this.start();
   }
 
-  endAnimation() {
-    this.queue.shift();
-    this.removeAnimationLine(this.animationLines[0]);
-
-    if (!this.queue.length) {
-      this.stop();
-    } else {
-      this.queue[0].animation();
+  public getDistanceToTargetFromTheLastQueuePoint(target: Asteroid) {
+    const lastQueuePoint = this.queue[this.queue.length - 1]?.target;
+    if (!lastQueuePoint) {
+      return getDistance(this.obj.x, target.x, this.obj.y, target.y);
     }
+    return getDistance(lastQueuePoint.x, target.x, lastQueuePoint.y, target.y);
   }
 
-  start() {
-    if (!this.isMoving) {
-      this.isMoving = true;
-      this.queue[0].animation();
+  public get totalDistanceForTheQueue() {
+    if (!this.queue.length && !this.target) {
+      return 0;
     }
-  }
 
-  stop() {
-    this.position = this.target;
-    this.target = null;
-    this.isMoving = false;
+    const distanceToTheFirstTarget = getDistance(this.obj.x, this.target.x, this.obj.y, this.target.y);
+
+    return this.queue.reduce((acc, { target }, currentIndex) => {
+      if (currentIndex === this.queue.length - 1) {
+        return acc;
+      }
+      return acc + getDistance(target.x, this.queue[currentIndex + 1].target.x, target.y, this.queue[currentIndex + 1].target.y);
+    }, distanceToTheFirstTarget);
   }
 }

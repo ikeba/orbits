@@ -56,7 +56,7 @@ export default class GameObject {
     this.gameObject.y = newY;
   }
 
-  addChild(child) {
+  addChild(child: GameObject) {
     this.gameObject.addChild(child.gameObject);
   }
 
