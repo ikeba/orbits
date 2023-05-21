@@ -15,7 +15,7 @@ export default class BlasterShot extends GameObject {
   }
 
   flyToTarget() {
-    turnTo(this.gameObject, this.target, true);
+    turnTo({ obj: this.gameObject, target: this.target, immediately: true });
     moveTo({
       obj: this,
       target: this.target,

@@ -57,7 +57,7 @@ export default class Movement {
     const animation = () => {
       this.position = null;
       this.target = target;
-      turnTo(this.obj.gameObject, target);
+      turnTo({ obj: this.obj.assets.ship.gameObject, parentObj: this.obj.gameObject, target });
       return moveTo({
         obj: this.obj, target, speed: this.speed, onUpdate: () => this.updateCurrentAnimationLine(), onComplete: () => this.endAnimation(),
       });

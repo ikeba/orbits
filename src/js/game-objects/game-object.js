@@ -10,9 +10,14 @@ export default class GameObject {
     interactive = false,
     asset,
   }) {
-    this.texture = PIXI.Texture.from(asset);
-    this.gameObject = new PIXI.Sprite(this.texture);
-    this.gameObject.anchor.set(0.5);
+    if (asset) {
+      this.texture = PIXI.Texture.from(asset);
+      this.gameObject = new PIXI.Sprite(this.texture);
+      this.gameObject.anchor.set(0.5);
+    } else {
+      this.gameObject = new PIXI.Container();
+    }
+
     this.gameObject.x = x;
     this.gameObject.y = y;
     this.gameObject.width = width;
@@ -43,6 +48,10 @@ export default class GameObject {
 
   set y(newY) {
     this.gameObject.y = newY;
+  }
+
+  addChild(child) {
+    this.gameObject.addChild(child.gameObject);
   }
 
   // eslint-disable-next-line class-methods-use-this

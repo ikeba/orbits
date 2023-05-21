@@ -1,8 +1,14 @@
 import gsap from 'gsap';
 import { getAngle, getTravelTime } from './utils';
 
-export function turnTo(obj, target, immediately = false) {
-  const angle = getAngle(obj.x, target.x, obj.y, target.y) + 90;
+export function turnTo({
+  obj,
+  parentObj,
+  target,
+  immediately = false,
+}) {
+  const container = parentObj || obj;
+  const angle = getAngle(container.x, target.x, container.y, target.y) + 90;
   if (immediately) {
     obj.angle = angle;
     return;
