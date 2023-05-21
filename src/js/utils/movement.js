@@ -10,9 +10,16 @@ export function turnTo(obj, target, immediately = false) {
   gsap.to(obj, { angle });
 }
 
-export function moveTo(obj, target, onComplete) {
-  const duration = getTravelTime(obj.x, target.x, obj.y, target.y, obj.speed);
+export function moveTo({
+  obj,
+  target,
+  onComplete,
+  onUpdate,
+  speed,
+  ease = 'none',
+} = {}) {
+  const duration = getTravelTime(obj.x, target.x, obj.y, target.y, speed);
   gsap.to(obj, {
-    duration, x: target.x, y: target.y, onComplete,
+    duration, x: target.x, y: target.y, onComplete, onUpdate, ease,
   });
 }

@@ -7,7 +7,7 @@ export default class Scene {
   addChild(child) {
     this.children.push(child);
     child.scene = this;
-    this.app.stage.addChild(child.gameObject);
+    this.app.stage.addChild(child.gameObject || child);
   }
 
   getChildByName(name) {
@@ -15,7 +15,7 @@ export default class Scene {
   }
 
   removeChild(child) {
-    this.app.stage.removeChild(child.gameObject);
+    this.app.stage.removeChild(child.gameObject || child);
     this.children.splice(this.children.indexOf(child), 1);
   }
 }

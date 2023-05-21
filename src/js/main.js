@@ -3,12 +3,12 @@ import times from 'lodash/times';
 import random from 'lodash/random';
 import Asteroid from './game-objects/asteroid';
 import Ship from './game-objects/ship';
-import { SIZE, ASTEROIDS_COUNT } from './config';
+import { FIELD_SIZE, ASTEROIDS_COUNT } from './config';
 import Scene from './game-objects/scene';
 
 const app = new PIXI.Application({
-  width: SIZE,
-  height: SIZE,
+  width: FIELD_SIZE,
+  height: FIELD_SIZE,
   backgroundColor: 0x000000,
   view: document.querySelector('#scene'),
   resolution: window.devicePixelRatio || 1,

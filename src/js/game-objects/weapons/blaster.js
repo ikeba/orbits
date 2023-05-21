@@ -16,6 +16,10 @@ export default class Blaster extends GameObject {
 
   flyToTarget() {
     turnTo(this.gameObject, this.target, true);
-    moveTo(this, this.target, () => this.scene.removeChild(this));
+    moveTo({
+      obj: this,
+      target: this.target,
+      onComplete: () => this.scene.removeChild(this),
+    });
   }
 }

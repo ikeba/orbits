@@ -1,12 +1,12 @@
 import GameObject from './game-object';
-import { SIZE } from '../config';
-import { moveTo, turnTo } from '../utils/movement';
+import { FIELD_SIZE } from '../config';
 import Blaster from './weapons/blaster';
+import Movement from '../processes/movement';
 
 export default class Ship extends GameObject {
   constructor({
-    x = SIZE / 2,
-    y = SIZE / 2,
+    x = FIELD_SIZE / 2,
+    y = FIELD_SIZE / 2,
   } = {}) {
     const name = 'playerShip';
     const asset = 'assets/png/playerShip3_green.png';
@@ -17,19 +17,29 @@ export default class Ship extends GameObject {
       name, asset, width, height, x, y,
     });
 
-    this.isMoving = false;
-    this.speed = 25;
+    this.movement = new Movement({ obj: this });
   }
 
   moveTo(target) {
-    if (this.isMoving) {
-      return;
-    }
-    this.isMoving = true;
-    turnTo(this.gameObject, target);
-    moveTo(this, target, () => {
-      this.isMoving = false;
-    });
+    this.movement.add(target);
+
+    // let movementLine;
+    //
+    // turnTo(this.gameObject, target);
+    // moveTo({
+    //   obj: this,
+    //   target,
+    //   onUpdate: () => {
+    //     if (movementLine) {
+    //       this.scene.removeChild(movementLine);
+    //     }
+    //     movementLine = drawMovementLine(this, target);
+    //     this.scene.addChild(movementLine);
+    //   },
+    //   onComplete: () => {
+    //     this.isMoving = false;
+    //   },
+    // });
   }
 
   hitByBlaster(target) {
