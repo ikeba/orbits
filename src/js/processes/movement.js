@@ -6,11 +6,16 @@ export default class Movement {
   constructor({
     obj,
     speed = DEFAULT_SHIP_SPEED,
+    position,
   } = {}) {
     this.obj = obj;
     this.speed = speed;
 
     this.isMoving = false;
+
+    this.position = position;
+    this.target = null;
+
     this.queue = [];
     this.animationLines = [];
   }
@@ -26,6 +31,12 @@ export default class Movement {
     this.animationLines.splice(this.animationLines.indexOf(line), 1);
   }
 
+  updateCurrentAnimationLine() {
+    this.obj.scene.removeChild(this.animationLines[0]);
+    this.animationLines[0] = getMovementLine(this.obj, this.queue[0].target);
+    this.obj.scene.addChild(this.animationLines[0]);
+  }
+
   addAnimation({ target, animation }) {
     if (this.queue.length) {
       this.addAnimationLine(this.queue[this.queue.length - 1].target, target);
@@ -39,10 +50,16 @@ export default class Movement {
   }
 
   add(target) {
+    if (target === this.queue[this.queue.length - 1]?.target) {
+      console.warn('Duplicated final position');
+      return;
+    }
     const animation = () => {
+      this.position = null;
+      this.target = target;
       turnTo(this.obj.gameObject, target);
       return moveTo({
-        obj: this.obj, target, speed: this.speed, onComplete: () => this.endAnimation(),
+        obj: this.obj, target, speed: this.speed, onUpdate: () => this.updateCurrentAnimationLine(), onComplete: () => this.endAnimation(),
       });
     };
 
@@ -70,6 +87,8 @@ export default class Movement {
   }
 
   stop() {
+    this.position = this.target;
+    this.target = null;
     this.isMoving = false;
   }
 }

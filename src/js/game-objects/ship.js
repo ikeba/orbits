@@ -1,12 +1,10 @@
 import GameObject from './game-object';
-import { FIELD_SIZE } from '../config';
-import Blaster from './weapons/blaster';
+import BlasterShot from './weapons/blasterShot';
 import Movement from '../processes/movement';
 
 export default class Ship extends GameObject {
   constructor({
-    x = FIELD_SIZE / 2,
-    y = FIELD_SIZE / 2,
+    position,
   } = {}) {
     const name = 'playerShip';
     const asset = 'assets/png/playerShip3_green.png';
@@ -14,35 +12,25 @@ export default class Ship extends GameObject {
     const height = 10;
 
     super({
-      name, asset, width, height, x, y,
+      name, asset, width, height, x: position.gameObject.x, y: position.gameObject.y,
     });
 
-    this.movement = new Movement({ obj: this });
+    this.movement = new Movement({ obj: this, position });
   }
 
   moveTo(target) {
+    if (target === this.movement.position) {
+      console.warn('Impossible to move to the same position');
+      return;
+    }
     this.movement.add(target);
-
-    // let movementLine;
-    //
-    // turnTo(this.gameObject, target);
-    // moveTo({
-    //   obj: this,
-    //   target,
-    //   onUpdate: () => {
-    //     if (movementLine) {
-    //       this.scene.removeChild(movementLine);
-    //     }
-    //     movementLine = drawMovementLine(this, target);
-    //     this.scene.addChild(movementLine);
-    //   },
-    //   onComplete: () => {
-    //     this.isMoving = false;
-    //   },
-    // });
   }
 
   hitByBlaster(target) {
-    this.scene.addChild(new Blaster(this.x, this.y, target));
+    if (target === this.movement.position) {
+      console.warn('Impossible to hit the same position');
+      return;
+    }
+    this.scene.addChild(new BlasterShot(this.x, this.y, target));
   }
 }

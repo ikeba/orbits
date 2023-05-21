@@ -23,9 +23,9 @@ times(ASTEROIDS_COUNT, () => {
     .push(new Asteroid());
 });
 
-const position = asteroids[random(0, ASTEROIDS_COUNT - 1)].gameObject;
+const position = asteroids[random(0, ASTEROIDS_COUNT - 1)];
 
-const ship = new Ship({ x: position.x, y: position.y });
+const ship = new Ship({ position });
 
 asteroids.map((asteroid) => scene.addChild(asteroid));
 scene.addChild(ship);

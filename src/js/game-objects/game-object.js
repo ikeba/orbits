@@ -23,7 +23,7 @@ export default class GameObject {
     }
 
     if (interactive) {
-      this.gameObject.interactive = interactive;
+      this.gameObject.eventMode = 'static';
       this.gameObject.cursor = 'pointer';
       this.gameObject.on('pointertap', this.onTap.bind(this));
     }
