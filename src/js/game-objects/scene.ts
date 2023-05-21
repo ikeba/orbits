@@ -1,4 +1,9 @@
+import * as PIXI from 'pixi.js';
+import GameObject from './game-object';
+
 export default class Scene {
+  app: PIXI.Application;
+  children: GameObject[];
   constructor(app) {
     this.app = app;
     this.children = [];
@@ -10,7 +15,7 @@ export default class Scene {
     this.app.stage.addChild(child.gameObject || child);
   }
 
-  getChildByName(name) {
+  getChildByName(name): any {
     return this.children.find((child) => child.gameObject.name === name);
   }
 

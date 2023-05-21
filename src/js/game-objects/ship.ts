@@ -1,28 +1,36 @@
 import GameObject from './game-object';
 import BlasterShot from './weapons/blasterShot';
 import Movement from '../processes/movement';
-import { DEFAULT_SHIP_FUEL_LEVEL } from '../config';
 import LevelLine from './ship-assets/level-line';
 
-export default class Ship extends GameObject {
-  constructor({
-    position,
-  } = {}) {
-    const name = 'playerShip';
-    const asset = 'assets/png/playerShip3_green.png';
+import { DEFAULT_SHIP_FUEL_LEVEL, DefaultGameObjectNames } from '../config';
+import Asteroid from './asteroid';
 
+export type ShipAssets = {
+  ship: GameObject,
+  fuelLevel: LevelLine,
+}
+export default class Ship extends GameObject {
+  fuel: number = DEFAULT_SHIP_FUEL_LEVEL;
+  assets: ShipAssets;
+  movement: Movement;
+
+  constructor({
+    position = null,
+  } = {}) {
     super({
-      name, x: position.gameObject.x, y: position.gameObject.y,
+      name: DefaultGameObjectNames.PlayerShip,
+      x: position.gameObject.x,
+      y: position.gameObject.y,
     });
 
-    this.fuel = DEFAULT_SHIP_FUEL_LEVEL;
     this.movement = new Movement({ obj: this, position });
 
     const shipWidth = 10;
     const shipHeight = 10;
 
     this.assets = {
-      ship: new GameObject({ width: shipWidth, height: shipHeight, asset }),
+      ship: new GameObject({ width: shipWidth, height: shipHeight, asset: 'assets/img/playerShip.png' }),
       fuelLevel: new LevelLine({
         y: shipHeight,
       }),
@@ -32,7 +40,7 @@ export default class Ship extends GameObject {
     this.addChild(this.assets.fuelLevel);
   }
 
-  moveTo(target) {
+  moveTo(target: Asteroid) {
     if (target === this.movement.position) {
       console.warn('Impossible to move to the same position');
       return;

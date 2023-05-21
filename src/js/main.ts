@@ -10,6 +10,7 @@ const app = new PIXI.Application({
   width: FIELD_SIZE,
   height: FIELD_SIZE,
   backgroundColor: 0x000000,
+  // @ts-ignore
   view: document.querySelector('#scene'),
   resolution: window.devicePixelRatio || 1,
 });
@@ -29,11 +30,3 @@ const ship = new Ship({ position });
 
 asteroids.map((asteroid) => scene.addChild(asteroid));
 scene.addChild(ship);
-
-app.ticker.add(() => {
-  // bunny.rotation -= 0.01 * delta;
-});
-
-console.log(ship);
-
-console.log(app.stage);

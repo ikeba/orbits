@@ -1,6 +1,7 @@
 import random from 'lodash/random';
-import { BOUNDS, FIELD_SIZE } from '../config';
+import { BOUNDS, DefaultGameObjectNames, FIELD_SIZE } from '../config';
 import GameObject from './game-object';
+import Ship from './ship';
 
 export default class Asteroid extends GameObject {
   constructor({
@@ -15,7 +16,7 @@ export default class Asteroid extends GameObject {
   }
 
   onTap(event) {
-    const ship = this.scene.getChildByName('playerShip');
+    const ship: Ship = this.scene.getChildByName(DefaultGameObjectNames.PlayerShip);
     if (event.data.originalEvent.metaKey) {
       ship.hitByBlaster(this);
       return;

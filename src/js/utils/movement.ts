@@ -17,13 +17,17 @@ export function turnTo({
 }
 
 export function moveTo({
-  obj,
-  target,
-  onComplete,
-  onUpdate,
-  speed,
+  obj = null,
+  target = null,
+  speed = null,
+  onComplete = () => {},
+  onUpdate = () => {},
   ease = 'none',
 } = {}) {
+  if (!obj || !target || !speed) {
+    console.error('Not enough arguments to move the object');
+    return;
+  }
   const duration = getTravelTime(obj.x, target.x, obj.y, target.y, speed);
   gsap.to(obj, {
     duration, x: target.x, y: target.y, onComplete, onUpdate, ease,

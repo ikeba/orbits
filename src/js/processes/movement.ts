@@ -1,23 +1,28 @@
 import { turnTo, moveTo } from '../utils/movement';
 import { DEFAULT_SHIP_SPEED } from '../config';
 import { getMovementLine } from '../utils/graphics';
+import Ship from '../game-objects/ship';
+import Asteroid from '../game-objects/asteroid';
 
 export default class Movement {
+  obj: Ship = null;
+  position: Asteroid;
+  speed: number;
+
+  isMoving = false;
+  target: Asteroid = null;
+
+  queue: Array<{ target: Asteroid, animation: any }> = [];
+  animationLines: Array<any> = [];
+
   constructor({
-    obj,
+    obj = null,
+    position = null,
     speed = DEFAULT_SHIP_SPEED,
-    position,
   } = {}) {
     this.obj = obj;
     this.speed = speed;
-
-    this.isMoving = false;
-
     this.position = position;
-    this.target = null;
-
-    this.queue = [];
-    this.animationLines = [];
   }
 
   addAnimationLine(from, to) {
@@ -49,7 +54,7 @@ export default class Movement {
     });
   }
 
-  add(target) {
+  add(target: Asteroid) {
     if (target === this.queue[this.queue.length - 1]?.target) {
       console.warn('Duplicated final position');
       return;

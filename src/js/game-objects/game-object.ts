@@ -1,18 +1,26 @@
 import * as PIXI from 'pixi.js';
+import Scene from './scene';
 
 export default class GameObject {
+  gameObject: PIXI.Container | PIXI.Sprite;
+  scene?: Scene;
+  texture?: PIXI.Texture;
+
   constructor({
-    name,
+    name = null,
     x = 0,
     y = 0,
     width = 5,
     height = 5,
     interactive = false,
-    asset,
+    asset = null,
   }) {
     if (asset) {
       this.texture = PIXI.Texture.from(asset);
       this.gameObject = new PIXI.Sprite(this.texture);
+      this.gameObject.width = width;
+      this.gameObject.height = height;
+      // @ts-ignore
       this.gameObject.anchor.set(0.5);
     } else {
       this.gameObject = new PIXI.Container();
@@ -20,8 +28,6 @@ export default class GameObject {
 
     this.gameObject.x = x;
     this.gameObject.y = y;
-    this.gameObject.width = width;
-    this.gameObject.height = height;
 
     if (name) {
       this.gameObject.name = name;
@@ -54,6 +60,6 @@ export default class GameObject {
     this.gameObject.addChild(child.gameObject);
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  onTap() {}
+  // eslint-disable-next-line class-methods-use-this,@typescript-eslint/no-unused-vars
+  onTap(event: PIXI.FederatedEvent) {}
 }
