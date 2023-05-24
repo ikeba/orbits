@@ -12,31 +12,35 @@ import {
   DEFAULT_SHIP_FUEL_ACQUIRE_AMOUNT,
   DEFAULT_SHIP_FUEL_LEVEL,
   DefaultGameObjectNames,
+  PossibleGameObjectTypes,
+  SHIP_SIZE,
 } from '../config';
 
 export type ShipAssets = {
-  ship: GameObject,
-  fuelLevel: LevelLine,
-}
+  ship: GameObject;
+  fuelLevel: LevelLine;
+};
 export default class Ship extends GameObject {
   fuel = DEFAULT_SHIP_FUEL_LEVEL;
-  // this means that the ship consumes <fuelConsumption>(1) fuel per 1 pixel of distance
-  fuelConsumption = 1;
+  /**
+   * @todo: add abstraction over 'pixel'
+   * how much fuel ship consumes per 1 pixel of distance
+   */
+  fuelConsumption = 0.5;
   assets: ShipAssets;
   movement: Movement;
 
   fuelAcquire: {
-    ticker: PIXI.Ticker,
-    elapsed: number,
+    ticker: PIXI.Ticker;
+    elapsed: number;
   } = {
-      ticker: null,
-      elapsed: 0,
-    };
+    ticker: null,
+    elapsed: 0,
+  };
 
-  constructor({
-    position = null,
-  } = {}) {
+  constructor({ position = null } = {}) {
     super({
+      type: PossibleGameObjectTypes.Container,
       name: DefaultGameObjectNames.PlayerShip,
       x: position.gameObject.x,
       y: position.gameObject.y,
@@ -44,13 +48,21 @@ export default class Ship extends GameObject {
 
     this.movement = new Movement({ obj: this, position });
 
-    const shipWidth = 10;
-    const shipHeight = 10;
+    const shipWidth = SHIP_SIZE;
+    const shipHeight = SHIP_SIZE;
 
     this.assets = {
-      ship: new GameObject({ width: shipWidth, height: shipHeight, asset: 'assets/img/playerShip.png' }),
+      ship: new GameObject({
+        type: PossibleGameObjectTypes.Sprite,
+        width: shipWidth,
+        height: shipHeight,
+
+        asset: 'assets/img/playerShip.png',
+      }),
       fuelLevel: new LevelLine({
         y: shipHeight * 0.75,
+        showCounter: true,
+        value: this.fuel,
       }),
     };
 
@@ -85,7 +97,10 @@ export default class Ship extends GameObject {
     if (this.fuelAcquire.elapsed > 1) {
       this.fuelAcquire.elapsed = 0;
       const asteroid = this.movement.position.value;
-      if (asteroid.energy >= DEFAULT_SHIP_FUEL_ACQUIRE_AMOUNT && this.fuel <= (DEFAULT_SHIP_FUEL_LEVEL - DEFAULT_SHIP_FUEL_ACQUIRE_AMOUNT)) {
+      if (
+        asteroid.energy >= DEFAULT_SHIP_FUEL_ACQUIRE_AMOUNT &&
+        this.fuel <= DEFAULT_SHIP_FUEL_LEVEL - DEFAULT_SHIP_FUEL_ACQUIRE_AMOUNT
+      ) {
         console.log('Asteroid energy', asteroid.energy);
         console.log('Ship fuel level', this.fuel);
         asteroid.consumeEnergy(DEFAULT_SHIP_FUEL_ACQUIRE_AMOUNT);
@@ -96,11 +111,16 @@ export default class Ship extends GameObject {
   }
 
   private isEnoughFuel(target: Asteroid) {
-    return this.fuel > this.movement.getDistanceToTargetFromTheLastQueuePoint(target) * this.fuelConsumption + this.movement.totalDistanceForTheQueue * this.fuelConsumption;
+    return (
+      this.fuel >
+      this.movement.getDistanceToTargetFromTheLastQueuePoint(target) * this.fuelConsumption +
+        this.movement.totalDistanceForTheQueue * this.fuelConsumption
+    );
   }
 
   private consumeFuel(target: Asteroid) {
     this.fuel -= this.movement.getDistanceToTargetFromTheLastQueuePoint(target) * this.fuelConsumption;
+    this.assets.fuelLevel.changeLevel(this.fuel, DEFAULT_SHIP_FUEL_LEVEL);
   }
 
   /**

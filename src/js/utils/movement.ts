@@ -1,13 +1,7 @@
 import gsap from 'gsap';
 import { getAngle, getTravelTime } from './utils';
 
-export function turnTo({
-  obj,
-  parentObj = null,
-  target = null,
-  immediately = false,
-  angleToTurn = null,
-}) {
+export function turnTo({ obj, parentObj = null, target = null, immediately = false, angleToTurn = null }) {
   const container = parentObj || obj;
   const angle = angleToTurn !== null ? angleToTurn : getAngle(container.x, target.x, container.y, target.y) + 90;
   if (immediately) {
@@ -31,6 +25,11 @@ export function moveTo({
   }
   const duration = getTravelTime(obj.x, target.x, obj.y, target.y, speed);
   gsap.to(obj, {
-    duration, x: target.x, y: target.y, onComplete, onUpdate, ease,
+    duration,
+    x: target.x,
+    y: target.y,
+    onComplete,
+    onUpdate,
+    ease,
   });
 }

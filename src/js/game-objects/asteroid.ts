@@ -1,6 +1,13 @@
 import random from 'lodash/random';
 import {
-  BOUNDS, DEFAULT_ASTEROID_ENERGY_LEVEL, DefaultGameObjectNames, FIELD_SIZE,
+  ASTEROID_SIZE,
+  BOUNDS,
+  DEFAULT_ASTEROID_ENERGY_LEVEL,
+  DEFAULT_LEVEL_LINE_HEIGHT,
+  DEFAULT_LEVEL_LINE_WIDTH,
+  DefaultGameObjectNames,
+  FIELD_SIZE,
+  PossibleGameObjectTypes,
 } from '../config';
 import GameObject from './game-object';
 import Ship from './ship';
@@ -17,16 +24,35 @@ export default class Asteroid extends GameObject {
     const asset = 'assets/img/asteroid.png';
     const interactive = true;
     super({
-      name, x, y, asset, interactive,
+      type: PossibleGameObjectTypes.Sprite,
+      name,
+      x,
+      y,
+      width: ASTEROID_SIZE,
+      height: ASTEROID_SIZE,
+      asset,
+      interactive,
     });
 
     this.energyLevel = new LevelLine({
       name: `asteroid#${random()}_energyLevel`,
       asset: 'assets/img/asteroid-fuel.png',
+      x: -DEFAULT_LEVEL_LINE_WIDTH / 4,
       y: 20,
+      width: DEFAULT_LEVEL_LINE_WIDTH / 2,
+      height: DEFAULT_LEVEL_LINE_HEIGHT / 2,
+      visible: false,
     });
 
     this.addChild(this.energyLevel);
+  }
+
+  onPointerOver() {
+    this.energyLevel.gameObject.visible = true;
+  }
+
+  onPointerOut() {
+    this.energyLevel.gameObject.visible = false;
   }
 
   onTap(event) {

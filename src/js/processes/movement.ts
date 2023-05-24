@@ -10,9 +10,9 @@ import Asteroid from '../game-objects/asteroid';
 import { getDistance } from '../utils/utils';
 
 type AnimationQueueElement = {
-  target: Asteroid,
-  animation: () => any,
-}
+  target: Asteroid;
+  animation: () => any;
+};
 export default class Movement {
   obj: Ship = null;
   position: Ref<Asteroid | null> = ref(null);
@@ -24,11 +24,7 @@ export default class Movement {
   queue: Array<AnimationQueueElement> = [];
   animationLines: Array<Graphics> = [];
 
-  constructor({
-    obj = null,
-    position = null,
-    speed = DEFAULT_SHIP_SPEED,
-  } = {}) {
+  constructor({ obj = null, position = null, speed = DEFAULT_SHIP_SPEED } = {}) {
     this.obj = obj;
     this.speed = speed;
 
@@ -89,6 +85,7 @@ export default class Movement {
   }
 
   public add(target: Asteroid) {
+    // @todo: remove final position on second click
     if (target === this.queue[this.queue.length - 1]?.target) {
       console.warn('Duplicated final position');
       return;
@@ -98,7 +95,11 @@ export default class Movement {
       this.target = target;
       turnTo({ obj: this.obj.assets.ship.gameObject, parentObj: this.obj.gameObject, target });
       return moveTo({
-        obj: this.obj, target, speed: this.speed, onUpdate: () => this.updateCurrentAnimationLine(), onComplete: () => this.endAnimation(),
+        obj: this.obj,
+        target,
+        speed: this.speed,
+        onUpdate: () => this.updateCurrentAnimationLine(),
+        onComplete: () => this.endAnimation(),
       });
     };
 
@@ -126,7 +127,10 @@ export default class Movement {
       if (currentIndex === this.queue.length - 1) {
         return acc;
       }
-      return acc + getDistance(target.x, this.queue[currentIndex + 1].target.x, target.y, this.queue[currentIndex + 1].target.y);
+      return (
+        acc +
+        getDistance(target.x, this.queue[currentIndex + 1].target.x, target.y, this.queue[currentIndex + 1].target.y)
+      );
     }, distanceToTheFirstTarget);
   }
 }
