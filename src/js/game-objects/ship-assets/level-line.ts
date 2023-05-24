@@ -1,5 +1,4 @@
 import * as PIXI from 'pixi.js';
-
 import GameObject from '../game-object';
 
 const DEFAULT_FUEL_LINE_WIDTH = 20;
@@ -12,13 +11,15 @@ export default class LevelLine extends GameObject {
     y = 0,
     width = DEFAULT_FUEL_LINE_WIDTH,
     height = 2,
+    name = 'fuelLine',
+    asset = 'assets/img/fuel.png',
   } = {}) {
     super({
       x, y, width, height,
     });
 
     this.fuelLine = new GameObject({
-      name: 'fuelLine', width: DEFAULT_FUEL_LINE_WIDTH, height: 2, asset: 'assets/img/fuel.png',
+      name, width, height, asset,
     });
 
     this.addChild(this.fuelLine);

@@ -1,10 +1,13 @@
+import { ref } from '@vue/reactivity';
+import { watch } from '@vue-reactivity/watch';
+
 import GameObject from './game-object';
 import BlasterShot from './weapons/blasterShot';
 import Movement from '../processes/movement';
 import LevelLine from './ship-assets/level-line';
+import Asteroid from './asteroid';
 
 import { DEFAULT_SHIP_FUEL_LEVEL, DefaultGameObjectNames } from '../config';
-import Asteroid from './asteroid';
 
 export type ShipAssets = {
   ship: GameObject,
@@ -40,6 +43,14 @@ export default class Ship extends GameObject {
 
     this.addChild(this.assets.ship);
     this.addChild(this.assets.fuelLevel);
+
+    watch(this.movement.position, () => this.onPositionChange());
+  }
+
+  private onPositionChange() {
+    if (this.movement.position !== null) {
+      this.assets.ship.turnToDefaultAngle();
+    }
   }
 
   private isEnoughFuel(target: Asteroid) {
@@ -53,8 +64,12 @@ export default class Ship extends GameObject {
     console.log(`FUEL LEFT: ${fuelLevel}%`);
   }
 
+  /**
+   * Main move function.
+   * @param target
+   */
   moveTo(target: Asteroid) {
-    if (target === this.movement.position) {
+    if (target === this.movement.position.value) {
       console.warn('Impossible to move to the same position');
       return;
     }
@@ -70,7 +85,7 @@ export default class Ship extends GameObject {
   }
 
   hitByBlaster(target: Asteroid) {
-    if (target === this.movement.position) {
+    if (target === this.movement.position.value) {
       console.warn('Impossible to hit the same position');
       return;
     }

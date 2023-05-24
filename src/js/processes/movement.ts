@@ -1,3 +1,6 @@
+import { Ref, ref } from '@vue/reactivity';
+import { watch } from '@vue-reactivity/watch';
+
 import { Graphics } from 'pixi.js';
 import { moveTo, turnTo } from '../utils/movement';
 import { DEFAULT_SHIP_SPEED } from '../config';
@@ -12,7 +15,7 @@ type AnimationQueueElement = {
 }
 export default class Movement {
   obj: Ship = null;
-  position: Asteroid;
+  position: Ref<Asteroid | null> = ref(null);
   speed: number;
 
   isMoving = false;
@@ -28,7 +31,8 @@ export default class Movement {
   } = {}) {
     this.obj = obj;
     this.speed = speed;
-    this.position = position;
+
+    this.position.value = position;
   }
 
   private addAnimationLine(from, to) {
@@ -79,7 +83,7 @@ export default class Movement {
   }
 
   private stop() {
-    this.position = this.target;
+    this.position.value = this.target;
     this.target = null;
     this.isMoving = false;
   }
@@ -90,7 +94,7 @@ export default class Movement {
       return;
     }
     const animation = () => {
-      this.position = null;
+      this.position.value = null;
       this.target = target;
       turnTo({ obj: this.obj.assets.ship.gameObject, parentObj: this.obj.gameObject, target });
       return moveTo({

@@ -3,12 +3,13 @@ import { getAngle, getTravelTime } from './utils';
 
 export function turnTo({
   obj,
-  parentObj,
-  target,
+  parentObj = null,
+  target = null,
   immediately = false,
+  angleToTurn = null,
 }) {
   const container = parentObj || obj;
-  const angle = getAngle(container.x, target.x, container.y, target.y) + 90;
+  const angle = angleToTurn !== null ? angleToTurn : getAngle(container.x, target.x, container.y, target.y) + 90;
   if (immediately) {
     obj.angle = angle;
     return;

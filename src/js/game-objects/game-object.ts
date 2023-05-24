@@ -1,10 +1,12 @@
 import * as PIXI from 'pixi.js';
 import Scene from './scene';
+import { turnTo } from '../utils/movement';
 
 export default class GameObject {
   gameObject: PIXI.Container | PIXI.Sprite;
   scene?: Scene;
   texture?: PIXI.Texture;
+  defaultAngle = 0;
 
   constructor({
     name = null,
@@ -62,4 +64,8 @@ export default class GameObject {
 
   // eslint-disable-next-line class-methods-use-this,@typescript-eslint/no-unused-vars
   onTap(event: PIXI.FederatedEvent) {}
+
+  public turnToDefaultAngle() {
+    turnTo({ obj: this.gameObject, angleToTurn: this.defaultAngle });
+  }
 }

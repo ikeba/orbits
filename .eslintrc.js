@@ -30,6 +30,7 @@ module.exports = {
     'lines-between-class-members': 'off',
     '@typescript-eslint/ban-ts-comment': 'off',
     '@typescript-eslint/no-empty-function': 'off',
+    'import/prefer-default-export': 'off',
     'import/extensions': [1, 'never'],
   },
 };

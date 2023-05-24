@@ -30,3 +30,5 @@ const ship = new Ship({ position });
 
 asteroids.map((asteroid) => scene.addChild(asteroid));
 scene.addChild(ship);
+
+(window as any).scene = scene;
