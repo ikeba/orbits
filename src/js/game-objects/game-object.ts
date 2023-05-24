@@ -16,6 +16,7 @@ export default class GameObject {
     height = 5,
     interactive = false,
     asset = null,
+    anchor = 0.5,
   }) {
     if (asset) {
       this.texture = PIXI.Texture.from(asset);
@@ -23,7 +24,7 @@ export default class GameObject {
       this.gameObject.width = width;
       this.gameObject.height = height;
       // @ts-ignore
-      this.gameObject.anchor.set(0.5);
+      this.gameObject.anchor.set(anchor);
     } else {
       this.gameObject = new PIXI.Container();
     }
@@ -56,6 +57,10 @@ export default class GameObject {
 
   set y(newY) {
     this.gameObject.y = newY;
+  }
+
+  get app() {
+    return this.scene.app;
   }
 
   addChild(child: GameObject) {

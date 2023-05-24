@@ -8,6 +8,7 @@ import LevelLine from './ship-assets/level-line';
 
 export default class Asteroid extends GameObject {
   public energy = DEFAULT_ASTEROID_ENERGY_LEVEL;
+  private readonly energyLevel: LevelLine;
   constructor({
     name = `asteroid#${random()}`,
     x = random(BOUNDS, FIELD_SIZE - BOUNDS),
@@ -19,13 +20,13 @@ export default class Asteroid extends GameObject {
       name, x, y, asset, interactive,
     });
 
-    const energyLevel = new LevelLine({
+    this.energyLevel = new LevelLine({
       name: `asteroid#${random()}_energyLevel`,
       asset: 'assets/img/asteroid-fuel.png',
       y: 20,
     });
 
-    this.addChild(energyLevel);
+    this.addChild(this.energyLevel);
   }
 
   onTap(event) {
@@ -35,5 +36,10 @@ export default class Asteroid extends GameObject {
       return;
     }
     ship.moveTo(this);
+  }
+
+  public consumeEnergy(amount: number) {
+    this.energy -= amount;
+    this.energyLevel.changeLevel(this.energy, DEFAULT_ASTEROID_ENERGY_LEVEL);
   }
 }

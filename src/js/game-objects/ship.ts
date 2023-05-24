@@ -1,4 +1,5 @@
-import { ref } from '@vue/reactivity';
+import * as PIXI from 'pixi.js';
+
 import { watch } from '@vue-reactivity/watch';
 
 import GameObject from './game-object';
@@ -7,7 +8,11 @@ import Movement from '../processes/movement';
 import LevelLine from './ship-assets/level-line';
 import Asteroid from './asteroid';
 
-import { DEFAULT_SHIP_FUEL_LEVEL, DefaultGameObjectNames } from '../config';
+import {
+  DEFAULT_SHIP_FUEL_ACQUIRE_AMOUNT,
+  DEFAULT_SHIP_FUEL_LEVEL,
+  DefaultGameObjectNames,
+} from '../config';
 
 export type ShipAssets = {
   ship: GameObject,
@@ -19,6 +24,14 @@ export default class Ship extends GameObject {
   fuelConsumption = 1;
   assets: ShipAssets;
   movement: Movement;
+
+  fuelAcquire: {
+    ticker: PIXI.Ticker,
+    elapsed: number,
+  } = {
+      ticker: null,
+      elapsed: 0,
+    };
 
   constructor({
     position = null,
@@ -37,7 +50,7 @@ export default class Ship extends GameObject {
     this.assets = {
       ship: new GameObject({ width: shipWidth, height: shipHeight, asset: 'assets/img/playerShip.png' }),
       fuelLevel: new LevelLine({
-        y: shipHeight,
+        y: shipHeight * 0.75,
       }),
     };
 
@@ -48,8 +61,37 @@ export default class Ship extends GameObject {
   }
 
   private onPositionChange() {
-    if (this.movement.position !== null) {
+    if (this.movement.position.value !== null) {
       this.assets.ship.turnToDefaultAngle();
+      // @todo: add more abstraction for the ticker
+      this.fuelAcquire.ticker = new PIXI.Ticker();
+      this.fuelAcquire.ticker.add((delta) => this.acquireFuel(delta));
+      this.fuelAcquire.ticker.start();
+    } else {
+      // this.app.ticker.remove(this.acquireFuel);
+    }
+  }
+
+  private acquireFuel(deltaTime) {
+    if (this.movement.position.value === null) {
+      // @todo: add reset() function to the ticker
+      this.fuelAcquire.ticker.destroy();
+      this.fuelAcquire.elapsed = 0;
+      return;
+    }
+
+    this.fuelAcquire.elapsed += (1 / 60) * deltaTime;
+
+    if (this.fuelAcquire.elapsed > 1) {
+      this.fuelAcquire.elapsed = 0;
+      const asteroid = this.movement.position.value;
+      if (asteroid.energy >= DEFAULT_SHIP_FUEL_ACQUIRE_AMOUNT && this.fuel <= (DEFAULT_SHIP_FUEL_LEVEL - DEFAULT_SHIP_FUEL_ACQUIRE_AMOUNT)) {
+        console.log('Asteroid energy', asteroid.energy);
+        console.log('Ship fuel level', this.fuel);
+        asteroid.consumeEnergy(DEFAULT_SHIP_FUEL_ACQUIRE_AMOUNT);
+        this.fuel += DEFAULT_SHIP_FUEL_ACQUIRE_AMOUNT;
+        this.assets.fuelLevel.changeLevel(this.fuel, DEFAULT_SHIP_FUEL_LEVEL);
+      }
     }
   }
 
@@ -59,9 +101,6 @@ export default class Ship extends GameObject {
 
   private consumeFuel(target: Asteroid) {
     this.fuel -= this.movement.getDistanceToTargetFromTheLastQueuePoint(target) * this.fuelConsumption;
-    const fuelLevel = (this.fuel / DEFAULT_SHIP_FUEL_LEVEL) * 100;
-    this.assets.fuelLevel.changeFuelLevel(fuelLevel);
-    console.log(`FUEL LEFT: ${fuelLevel}%`);
   }
 
   /**

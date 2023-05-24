@@ -6,6 +6,11 @@ export const DEFAULT_SHIP_SPEED = 50;
 export const DEFAULT_ASTEROID_ENERGY_LEVEL = 100;
 export const DEFAULT_SHIP_FUEL_LEVEL = 1000;
 
+/**
+ * How much fuel the ship can acquire per second
+ */
+export const DEFAULT_SHIP_FUEL_ACQUIRE_AMOUNT = 5;
+
 export enum DefaultGameObjectNames {
     PlayerShip = 'PlayerShip',
 }

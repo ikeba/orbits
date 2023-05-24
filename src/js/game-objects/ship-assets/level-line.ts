@@ -1,35 +1,37 @@
 import * as PIXI from 'pixi.js';
 import GameObject from '../game-object';
 
-const DEFAULT_FUEL_LINE_WIDTH = 20;
+const DEFAULT_LINE_WIDTH = 20;
 
 export default class LevelLine extends GameObject {
-  fuelLine: GameObject;
+  line: GameObject;
 
   constructor({
-    x = 0,
+    x = -DEFAULT_LINE_WIDTH / 2,
     y = 0,
-    width = DEFAULT_FUEL_LINE_WIDTH,
+    width = DEFAULT_LINE_WIDTH,
     height = 2,
     name = 'fuelLine',
     asset = 'assets/img/fuel.png',
+    anchor = 0,
   } = {}) {
     super({
       x, y, width, height,
     });
 
-    this.fuelLine = new GameObject({
-      name, width, height, asset,
+    this.line = new GameObject({
+      name, width, height, asset, anchor,
     });
 
-    this.addChild(this.fuelLine);
+    this.addChild(this.line);
   }
 
   /**
    * Change the width of the fuel level line
-   * @param fuel - the new fuel level in percentage from 0 to 100
    */
-  public changeFuelLevel(fuel: number) {
-    (this.fuelLine.gameObject as PIXI.Sprite).width = DEFAULT_FUEL_LINE_WIDTH * (fuel / 100);
+  public changeLevel(newLevel, defaultLevel: number) {
+    const fuelLevel = (newLevel / defaultLevel) * 100;
+    (this.line.gameObject as PIXI.Sprite).width = DEFAULT_LINE_WIDTH * (fuelLevel / 100);
+    return fuelLevel;
   }
 }
